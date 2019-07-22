@@ -4,41 +4,41 @@ import ru.skillbranch.devintensive.utils.Utils
 import java.util.*
 
 data class User(
-        val id: String,
-        var firstName: String?,
-        var lastName: String?,
-        var avatar: String?,
-        var rating: Int = 0,
-        var respect: Int = 0,
-        var lastVisit: Date? = Date(),
-        var isOnline: Boolean = false
+    val id: String,
+    var firstName: String?,
+    var lastName: String?,
+    var avatar: String?,
+    var rating: Int = 0,
+    var respect: Int = 0,
+    var lastVisit: Date? = Date(),
+    var isOnline: Boolean = false
 ) {
-    constructor(id: String, firstName: String?, lastName: String?) : this(
-            id = id,
-            firstName = firstName,
-            lastName = lastName,
-            avatar = null
-    )
+    constructor(
+        id: String,
+        firstName: String?,
+        lastName: String?
+    ) : this(id, firstName, lastName, null)
 
     companion object Factory {
-        private var lastId: Int = -1
+        private var lastUserId = 0
+
         fun makeUser(fullName: String?): User {
-            lastId++
             val (firstName, lastName) = Utils.parseFullName(fullName)
-            return User(lastId.toString(), firstName = firstName, lastName = lastName)
+            val userId = lastUserId++
+            return User("$userId", firstName, lastName)
         }
     }
 
-    class Builder {
-        private var id: String = (Factory.lastId++).toString()
-        private var firstName: String? = null
-        private var lastName: String? = null
-        private var avatar: String? = null
-        private var rating: Int = 0
-        private var respect: Int = 0
-        private var lastVisit: Date? = Date()
+    class Builder(
+        private var id: String = "empty_Id",
+        private var firstName: String? = null,
+        private var lastName: String? = null,
+        private var avatar: String? = null,
+        private var rating: Int = 0,
+        private var respect: Int = 0,
+        private var lastVisit: Date? = Date(),
         private var isOnline: Boolean = false
-
+    ) {
         fun id(id: String): Builder {
             this.id = id
             return this
@@ -79,15 +79,16 @@ data class User(
             return this
         }
 
-        fun build() = User(
-                id,
-                firstName,
-                lastName,
-                avatar,
-                rating,
-                respect,
-                lastVisit,
-                isOnline
-        )
+        fun build(): User =
+            User(
+                id = this.id,
+                firstName = this.firstName,
+                lastName = this.lastName,
+                avatar = this.avatar,
+                rating = this.rating,
+                respect = this.respect,
+                lastVisit = this.lastVisit,
+                isOnline = this.isOnline
+            )
     }
 }
